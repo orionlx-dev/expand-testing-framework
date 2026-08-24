@@ -1,36 +1,52 @@
 package controllers;
 
-import config.TestPropertiesConfig;
-import io.restassured.http.ContentType;
+import ctx.AuthContext;
+import io.qameta.allure.Step;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
-import models.profile.Profile;
+import lombok.RequiredArgsConstructor;
 import models.profile.create.AddProfileRequest;
-import org.aeonbits.owner.ConfigFactory;
+import models.profile.login.LoginRequest;
+import spec.ApiSpec;
 
-import static io.restassured.RestAssured.*;
+import static io.restassured.RestAssured.given;
 
+@RequiredArgsConstructor
 public final class ProfileController {
 
-    RequestSpecification requestSpecification;
+    private final AuthContext authContext;
     private static final String PROFILE_ENDPOINT = "users";
-    TestPropertiesConfig config = ConfigFactory.create(TestPropertiesConfig.class, System.getProperties());
 
-    public ProfileController() {
-        requestSpecification = given()
-                .accept(ContentType.JSON)
-                .contentType(ContentType.JSON)
-                .baseUri(config.getApiBaseUrl());
-    }
-
+    @Step("Создание нового профиля")
     public Response registerProfile(AddProfileRequest profile) {
         return given()
-                .spec(this.requestSpecification)
+                .spec(ApiSpec.unauthenticatedSpec())
                 .body(profile)
                 .when()
                 .post(PROFILE_ENDPOINT + "/" + "register")
                 .andReturn();
 
+    }
+
+    @Step("Аутентификация пользователя")
+    public Response loginProfile(LoginRequest request) {
+        Response response = given()
+                .spec(ApiSpec.unauthenticatedSpec())
+                .body(request)
+                .when()
+                .post(PROFILE_ENDPOINT + "/" + "login")
+                .andReturn();
+
+        authContext.setToken(response.jsonPath().getString("data.token"));
+        return response;
+    }
+
+    @Step("Получение аутентифицированного пользователя")
+    public Response fetch() {
+        return given()
+                .spec(ApiSpec.authenticatedSpec(authContext))
+                .when()
+                .get(PROFILE_ENDPOINT + "/" + "profile")
+                .andReturn();
     }
 
 }

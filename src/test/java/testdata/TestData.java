@@ -9,6 +9,16 @@ import net.datafaker.Faker;
 public final class TestData {
     private static final Faker FAKER = new Faker();
 
+    public static Profile generateProfile() {
+        return Profile.builder()
+                .name(FAKER.name().name())
+                .email(FAKER.internet().emailAddress())
+                .password(FAKER.credentials().password())
+                .phone(FAKER.phoneNumber().phoneNumber())
+                .company(FAKER.company().name())
+                .build();
+    }
+
     public static final Profile RANDOM_PROFILE = Profile.builder()
             .name(FAKER.name().name())
             .email(FAKER.internet().emailAddress())

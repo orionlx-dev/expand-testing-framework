@@ -20,6 +20,8 @@ dependencies {
     implementation("org.mapstruct:mapstruct:1.6.3")
     // Source: https://mvnrepository.com/artifact/org.projectlombok/lombok-mapstruct-binding
     implementation("org.projectlombok:lombok-mapstruct-binding:0.2.0")
+    // Source: https://mvnrepository.com/artifact/io.qameta.allure/allure-rest-assured
+    implementation("io.qameta.allure:allure-rest-assured:2.35.4")
 
     testCompileOnly("org.projectlombok:lombok:1.18.46")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.46")
@@ -34,6 +36,15 @@ dependencies {
     testImplementation("io.rest-assured:rest-assured:6.0.1")
 }
 
+tasks.register<Delete>("clean-allure") {
+    delete(
+        layout.projectDirectory.dir("allure-results"),
+        layout.projectDirectory.dir("allure-report")
+    )
+}
+
 tasks.test {
     useJUnitPlatform()
+    systemProperty("allure.results.directory", layout.projectDirectory.dir("allure-results").asFile.absolutePath)
+    dependsOn("clean-allure")
 }

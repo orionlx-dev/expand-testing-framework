@@ -10,7 +10,7 @@ public class TestDataGeneratorExtension implements BeforeEachCallback, Parameter
     private static final String PROFILE_NAMESPACE_KEY = "profile";
     @Override
     public void beforeEach(ExtensionContext context) throws Exception {
-        Profile randomProfile = TestData.RANDOM_PROFILE;
+        Profile randomProfile = TestData.generateProfile();
         context.getStore(PROFILE_NAMESPACE).put(PROFILE_NAMESPACE_KEY, randomProfile);
         System.out.println("Generated random profile: " + randomProfile);
     }
@@ -24,6 +24,6 @@ public class TestDataGeneratorExtension implements BeforeEachCallback, Parameter
     @Override
     public @Nullable Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
             throws ParameterResolutionException {
-        return extensionContext.getStore(PROFILE_NAMESPACE).get(PROFILE_NAMESPACE_KEY, Profile.class);
+        return extensionContext.getStore(PROFILE_NAMESPACE).remove(PROFILE_NAMESPACE_KEY, Profile.class);
     }
 }
