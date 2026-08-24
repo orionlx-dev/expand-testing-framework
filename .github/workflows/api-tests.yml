@@ -4,7 +4,9 @@ on:
   push:
     branches:
       - main
+
   pull_request:
+
   workflow_dispatch:
 
 permissions:
@@ -26,25 +28,48 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - name: Debug checkout
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Check Gradle
         run: |
-          echo "=== PWD ==="
           pwd
+          ls -la gradlew
+          ./gradlew --version
 
-          echo "=== GIT REMOTE ==="
-          git remote -v
+      - name: Setup allurectl
+        uses: allure-framework/setup-allurectl@v1
+        with:
+          allure-endpoint: ${{ env.ALLURE_ENDPOINT }}
+          allure-project-id: ${{ env.ALLURE_PROJECT_ID }}
+          allure-token: ${{ secrets.ALLURE_TOKEN }}
 
-          echo "=== GIT STATUS ==="
-          git status
+      - name: Run tests
+        run: |
+          allurectl watch -- ./gradlew clean test
 
-          echo "=== GIT BRANCH ==="
-          git branch -a
+      - name: Check Allure results
+        if: always()
+        run: |
+          echo "=== Allure directories ==="
+          find . -type d -name "*allure*" -print
 
-          echo "=== GIT LOG ==="
-          git log --oneline -5
+          echo "=== Allure result files ==="
+          find . -type f \( \
+            -name "*-result.json" -o \
+            -name "*-container.json" \
+          \) -print
 
-          echo "=== FILES ==="
-          ls -la
-
-          echo "=== ALL FILES ==="
-          find . -maxdepth 3 -type f | sort
+      - name: Upload Allure results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results
+          path: build/allure-results
+          if-no-files-found: warn
