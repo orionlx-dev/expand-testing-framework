@@ -71,6 +71,10 @@ jobs:
         run: |
           allurectl upload ./allure-results
 
+      - name: Close Allure launch
+        if: ${{ success() }}
+        run: allurectl launch close --current-launch
+
       - name: Upload Allure results as GitHub artifact
         if: always()
         uses: actions/upload-artifact@v4
