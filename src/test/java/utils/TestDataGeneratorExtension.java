@@ -1,5 +1,7 @@
 package utils;
 
+import annotations.FakeCompany;
+import annotations.FakePhone;
 import models.profile.Profile;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.extension.*;
@@ -18,12 +20,24 @@ public class TestDataGeneratorExtension implements BeforeEachCallback, Parameter
     @Override
     public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
             throws ParameterResolutionException {
-        return parameterContext.getParameter().getType().equals(Profile.class);
+        return parameterContext.getParameter().getType().equals(Profile.class)
+                || parameterContext.isAnnotated(FakePhone.class)
+                || parameterContext.isAnnotated(FakeCompany.class);
     }
 
     @Override
     public @Nullable Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
             throws ParameterResolutionException {
-        return extensionContext.getStore(PROFILE_NAMESPACE).remove(PROFILE_NAMESPACE_KEY, Profile.class);
+
+        if (parameterContext.isAnnotated(FakePhone.class)) {
+            return TestData.generatePhone(parameterContext.getParameter().getAnnotation(FakePhone.class));
+        }
+        else if (parameterContext.isAnnotated(FakeCompany.class)) {
+            return TestData.generateCompany(parameterContext.getParameter().getAnnotation(FakeCompany.class));
+        }
+        else {
+            return extensionContext.getStore(PROFILE_NAMESPACE).get(PROFILE_NAMESPACE_KEY, Profile.class);
+        }
+
     }
 }

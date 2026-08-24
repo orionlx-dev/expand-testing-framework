@@ -1,10 +1,13 @@
-package tests.api;
+package tests.api.positive;
 
+import annotations.FakeCompany;
+import annotations.FakePhone;
 import controllers.ProfileController;
 import ctx.AuthContext;
 import io.qameta.allure.Allure;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
+import io.qameta.allure.TmsLink;
 import io.restassured.response.Response;
 import models.profile.Profile;
 import models.profile.create.AddProfileRequest;
@@ -13,9 +16,12 @@ import models.profile.delete.DeleteResponse;
 import models.profile.fetch.FetchProfileResponse;
 import models.profile.login.LoginRequest;
 import models.profile.login.LoginResponse;
+import models.profile.update.PatchResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.provider.CsvSource;
 import utils.TestDataGeneratorExtension;
 import utils.mappers.ProfileToRequestMapper;
 
@@ -107,6 +113,52 @@ public class ApiProfileTest {
 
         assertEquals(200, response.statusCode());
         assertTrue(deleteResponse.getSuccess());
+    }
+
+    @DisplayName("Пользовательский флоу - создание, обновление, чтение и удаление профиля")
+    @TmsLink("270")
+    @Severity(SeverityLevel.CRITICAL)
+    @RepeatedTest(10)
+    public void createLoginFetchUpdateDeleteRandomProfileTest(Profile profile,
+                                                              @FakePhone String phone,
+                                                              @FakeCompany String company) {
+
+        Allure.parameter("name", profile.getName());
+        Allure.parameter("email", profile.getEmail());
+        Allure.parameter("password", profile.getPassword());
+        Allure.parameter("phone", profile.getPhone());
+        Allure.parameter("company", profile.getCompany());
+
+        AddProfileResponse registerResponse = profileController.registerProfile(
+                ProfileToRequestMapper.INSTANCE.profileToAddProfileRequestDto(profile)
+        ).jsonPath().getObject("data", AddProfileResponse.class);
+
+        assertNotNull(registerResponse.getId());
+
+        LoginResponse loginResponse = profileController.loginProfile(
+                ProfileToRequestMapper.INSTANCE.profileToLoginRequestDto(profile)
+        ).jsonPath().getObject("data", LoginResponse.class);
+
+        Allure.parameter("token", loginResponse.getToken());
+
+        assertNotNull(loginResponse.getToken());
+
+        profile.setPhone(phone);
+        profile.setCompany(company);
+        Response response = profileController.patch(
+                ProfileToRequestMapper.INSTANCE.profileToPatchRequestDto(profile)
+        );
+        PatchResponse patchResponse = response.jsonPath().getObject("data", PatchResponse.class);
+
+        assertEquals(200, response.statusCode());
+        assertEquals(profile.getName(), patchResponse.getName());
+        assertEquals(profile.getPhone(), patchResponse.getPhone());
+        assertEquals(profile.getCompany(), patchResponse.getCompany());
+
+        DeleteResponse deleteResponse = profileController.delete().as(DeleteResponse.class);
+
+        assertEquals(true, deleteResponse.getSuccess());
+        assertEquals(200, deleteResponse.getStatus());
     }
 
 }

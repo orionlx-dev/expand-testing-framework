@@ -3,6 +3,7 @@ package utils.mappers;
 import models.profile.Profile;
 import models.profile.create.AddProfileRequest;
 import models.profile.login.LoginRequest;
+import models.profile.update.PatchRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -12,4 +13,5 @@ public interface ProfileToRequestMapper {
 
     AddProfileRequest profileToAddProfileRequestDto(Profile profile);
     LoginRequest profileToLoginRequestDto(Profile profile);
+    PatchRequest profileToPatchRequestDto(Profile profile);
 }
