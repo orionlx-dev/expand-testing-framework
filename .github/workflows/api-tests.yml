@@ -20,33 +20,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: '21'
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6
-
-      - name: Setup allurectl
-        uses: allure-framework/setup-allurectl@v1
-        with:
-          allure-endpoint: ${{ env.ALLURE_ENDPOINT }}
-          allure-project-id: ${{ env.ALLURE_PROJECT_ID }}
-          allure-token: ${{ secrets.ALLURE_TOKEN }}
-
       - name: Run tests
         run: |
-          allurectl watch -- ./gradlew clean test
+          ./gradlew clean test
 
-      - name: Upload Allure results as GitHub artifact
+      - name: Debug Allure results
         if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: allure-results
-          path: ./allure-results
-          if-no-files-found: warn
+        run: |
+          echo "Searching for Allure results..."
+          find . -type f \( -name "*-result.json" -o -name "*-container.json" \) -print
+          echo "Directories:"
+          find . -type d -name "*allure*" -print
