@@ -20,18 +20,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Debug workspace
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Debug checkout
         run: |
-          echo "Current directory:"
+          echo "=== PWD ==="
           pwd
 
-          echo "Root:"
+          echo "=== GIT REMOTE ==="
+          git remote -v
+
+          echo "=== GIT STATUS ==="
+          git status
+
+          echo "=== GIT BRANCH ==="
+          git branch -a
+
+          echo "=== GIT LOG ==="
+          git log --oneline -5
+
+          echo "=== FILES ==="
           ls -la
 
-          echo "Gradle wrapper:"
-          find . -name "gradlew" -type f -print
-
-          echo "Build files:"
-          find . -maxdepth 4 \
-            \( -name "build.gradle" -o -name "build.gradle.kts" -o -name "settings.gradle" -o -name "settings.gradle.kts" \) \
-            -print
+          echo "=== ALL FILES ==="
+          find . -maxdepth 3 -type f | sort
