@@ -121,7 +121,7 @@ public class ApiProfileTest {
     @RepeatedTest(10)
     public void createLoginFetchUpdateDeleteRandomProfileTest(Profile profile,
                                                               @FakePhone String phone,
-                                                              @FakeCompany String company) {
+                                                              @FakeCompany(minLength = 4, maxLength = 30) String company) {
 
         Allure.parameter("name", profile.getName());
         Allure.parameter("email", profile.getEmail());
