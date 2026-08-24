@@ -126,6 +126,8 @@ public class ApiProfileTest {
         Allure.parameter("name", profile.getName());
         Allure.parameter("email", profile.getEmail());
         Allure.parameter("password", profile.getPassword());
+        Allure.parameter("phone", profile.getPhone());
+        Allure.parameter("company", profile.getCompany());
 
         AddProfileResponse registerResponse = profileController.registerProfile(
                 ProfileToRequestMapper.INSTANCE.profileToAddProfileRequestDto(profile)
