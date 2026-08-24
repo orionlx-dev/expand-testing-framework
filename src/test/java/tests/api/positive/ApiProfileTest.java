@@ -19,9 +19,7 @@ import models.profile.login.LoginResponse;
 import models.profile.update.PatchResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.RepeatedTest;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.provider.CsvSource;
 import utils.TestDataGeneratorExtension;
 import utils.mappers.ProfileToRequestMapper;
 

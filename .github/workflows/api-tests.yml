@@ -69,7 +69,7 @@ jobs:
       - name: Create Allure launch
         id: launch
         run: |
-          LAUNCH_ID=$(allurectl launch create --output json | jq -r '.id')
+          LAUNCH_ID=$(allurectl launch create --output json | jq -r '.[0].id')
 
           echo "Launch ID: $LAUNCH_ID"
           echo "launch_id=$LAUNCH_ID" >> "$GITHUB_OUTPUT"
