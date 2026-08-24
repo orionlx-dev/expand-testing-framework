@@ -66,14 +66,24 @@ jobs:
             -name "*-container.json" \
           \) -print
 
+      - name: Create Allure launch
+        id: launch
+        run: |
+          LAUNCH_ID=$(allurectl launch create --output json | jq -r '.id')
+
+          echo "Launch ID: $LAUNCH_ID"
+          echo "launch_id=$LAUNCH_ID" >> "$GITHUB_OUTPUT"
+
       - name: Upload results to Allure TestOps
         if: always()
         run: |
           allurectl upload ./allure-results
 
+
       - name: Close Allure launch
-        if: ${{ success() }}
-        run: allurectl launch close --current-launch
+        if: always()
+        run: |
+          allurectl launch close "${{ steps.launch.outputs.launch_id }}"
 
       - name: Upload Allure results as GitHub artifact
         if: always()
