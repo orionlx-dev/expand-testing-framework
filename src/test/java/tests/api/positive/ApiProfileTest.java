@@ -126,8 +126,6 @@ public class ApiProfileTest {
         Allure.parameter("name", profile.getName());
         Allure.parameter("email", profile.getEmail());
         Allure.parameter("password", profile.getPassword());
-        Allure.parameter("phone", profile.getPhone());
-        Allure.parameter("company", profile.getCompany());
 
         AddProfileResponse registerResponse = profileController.registerProfile(
                 ProfileToRequestMapper.INSTANCE.profileToAddProfileRequestDto(profile)
@@ -145,6 +143,9 @@ public class ApiProfileTest {
 
         profile.setPhone(phone);
         profile.setCompany(company);
+        Allure.parameter("phone_to_update", profile.getPhone());
+        Allure.parameter("company_to_update", profile.getCompany());
+
         Response response = profileController.patch(
                 ProfileToRequestMapper.INSTANCE.profileToPatchRequestDto(profile)
         );
