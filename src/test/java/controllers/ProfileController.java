@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import lombok.RequiredArgsConstructor;
 import models.profile.create.AddProfileRequest;
 import models.profile.login.LoginRequest;
+import models.profile.update.PatchRequest;
 import spec.ApiSpec;
 
 import static io.restassured.RestAssured.given;
@@ -46,6 +47,25 @@ public final class ProfileController {
                 .spec(ApiSpec.authenticatedSpec(authContext))
                 .when()
                 .get(PROFILE_ENDPOINT + "/" + "profile")
+                .andReturn();
+    }
+
+    @Step("Изменение части данных пользователя")
+    public Response patch(PatchRequest request) {
+        return given()
+                .spec(ApiSpec.authenticatedSpec(authContext))
+                .body(request)
+                .when()
+                .patch(PROFILE_ENDPOINT + "/" + "profile")
+                .andReturn();
+    }
+
+    @Step("Удаление профиля пользователя")
+    public Response delete() {
+        return given()
+                .spec(ApiSpec.authenticatedSpec(authContext))
+                .when()
+                .delete(PROFILE_ENDPOINT + "/" + "delete-account")
                 .andReturn();
     }
 

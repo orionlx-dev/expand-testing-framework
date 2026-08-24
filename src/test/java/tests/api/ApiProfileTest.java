@@ -9,12 +9,12 @@ import io.restassured.response.Response;
 import models.profile.Profile;
 import models.profile.create.AddProfileRequest;
 import models.profile.create.AddProfileResponse;
+import models.profile.delete.DeleteResponse;
 import models.profile.fetch.FetchProfileResponse;
 import models.profile.login.LoginRequest;
 import models.profile.login.LoginResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.RepeatedTest;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import utils.TestDataGeneratorExtension;
 import utils.mappers.ProfileToRequestMapper;
@@ -71,6 +71,7 @@ public class ApiProfileTest {
     @RepeatedTest(10)
     public void createAndFetchRandomProfileTest(Profile profile) {
         profileController.registerProfile(ProfileToRequestMapper.INSTANCE.profileToAddProfileRequestDto(profile));
+
         LoginResponse loginResponse = profileController.loginProfile(
                 ProfileToRequestMapper.INSTANCE.profileToLoginRequestDto(profile)
         ).jsonPath().getObject("data", LoginResponse.class);
@@ -84,6 +85,28 @@ public class ApiProfileTest {
 
         assertEquals(200, response.statusCode());
         assertNotNull(fetchProfileResponse.getId());
+    }
+
+    @DisplayName("Создание и удаление профиля DELETE /users/delete-account")
+    @Severity(SeverityLevel.CRITICAL)
+    @RepeatedTest(10)
+    public void createAndDeleteFlowOfRandomProfileTest(Profile profile) {
+        Allure.parameter("name", profile.getName());
+        Allure.parameter("email", profile.getEmail());
+        Allure.parameter("password", profile.getPassword());
+
+        profileController.registerProfile(
+                ProfileToRequestMapper.INSTANCE.profileToAddProfileRequestDto(profile)
+        );
+        profileController.loginProfile(
+                ProfileToRequestMapper.INSTANCE.profileToLoginRequestDto(profile)
+        );
+
+        Response response = profileController.delete();
+        DeleteResponse deleteResponse = response.as(DeleteResponse.class);
+
+        assertEquals(200, response.statusCode());
+        assertTrue(deleteResponse.getSuccess());
     }
 
 }
