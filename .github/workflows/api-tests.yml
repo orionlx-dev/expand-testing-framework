@@ -66,10 +66,15 @@ jobs:
             -name "*-container.json" \
           \) -print
 
-      - name: Upload Allure results
+      - name: Upload results to Allure TestOps
+        if: always()
+        run: |
+          allurectl upload ./allure-results
+
+      - name: Upload Allure results as GitHub artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: allure-results
-          path: ./allure-results
+          path: ./build/allure-results
           if-no-files-found: warn
