@@ -16,6 +16,9 @@ build/
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
+.idea
+allure-results
+allure-report
 
 ### Eclipse ###
 .apt_generated

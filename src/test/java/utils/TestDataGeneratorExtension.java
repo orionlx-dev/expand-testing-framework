@@ -16,12 +16,14 @@ public class TestDataGeneratorExtension implements BeforeEachCallback, Parameter
     }
 
     @Override
-    public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
+    public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
+            throws ParameterResolutionException {
         return parameterContext.getParameter().getType().equals(Profile.class);
     }
 
     @Override
-    public @Nullable Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
+    public @Nullable Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
+            throws ParameterResolutionException {
         return extensionContext.getStore(PROFILE_NAMESPACE).get(PROFILE_NAMESPACE_KEY, Profile.class);
     }
 }
