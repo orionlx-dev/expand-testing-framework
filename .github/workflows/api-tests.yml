@@ -20,16 +20,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Make Gradle wrapper executable
-        run: chmod +x gradlew
-
-      - name: Run tests
-        run: ./gradlew clean test
-
-      - name: Debug Allure results
-        if: always()
+      - name: Debug workspace
         run: |
-          echo "Searching for Allure results..."
-          find . -type f \( -name "*-result.json" -o -name "*-container.json" \) -print
-          echo "Directories:"
-          find . -type d -name "*allure*" -print
+          echo "Current directory:"
+          pwd
+
+          echo "Root:"
+          ls -la
+
+          echo "Gradle wrapper:"
+          find . -name "gradlew" -type f -print
+
+          echo "Build files:"
+          find . -maxdepth 4 \
+            \( -name "build.gradle" -o -name "build.gradle.kts" -o -name "settings.gradle" -o -name "settings.gradle.kts" \) \
+            -print
