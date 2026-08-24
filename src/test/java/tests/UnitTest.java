@@ -1,21 +1,21 @@
 package tests;
 
-import config.TestPropertiesConfig;
-import org.aeonbits.owner.ConfigFactory;
-import org.junit.jupiter.api.Test;
+import models.profile.Profile;
+import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import utils.TestDataGeneratorExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
+@ExtendWith({TestDataGeneratorExtension.class})
 public class UnitTest {
 
-    @Test
-    public void shouldOperateTestConfigurationProperly() {
-        String baseUrl = "https://practice.expandtesting.com/notes/api";
-        Long requestTimeout = 10000L;
-        TestPropertiesConfig config = ConfigFactory.create(TestPropertiesConfig.class);
-
-        assertEquals(baseUrl, config.getApiBaseUrl());
-        assertEquals(requestTimeout, config.getRequestTimeout());
+    @RepeatedTest(10)
+    public void shouldGenerateProfileViaExtensionProperly(Profile profile) {
+        System.out.println(profile);
+        assertNotNull(profile);
+        assertNull(profile.getId());
     }
 
 }
